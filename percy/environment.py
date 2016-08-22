@@ -64,6 +64,32 @@ class Environment(object):
             'git config --get remote.origin.url', stdout=subprocess.PIPE, shell=True)
         return process.stdout.read().strip().decode('utf-8')
 
+    def _get_latest_commit_format(self, format_str):
+        process = subprocess.Popen(
+            ['git', 'log', '-1', '--format={}'.format(format_str)], stdout=subprocess.PIPE)
+        return process.stdout.read().strip().decode('utf-8')
+
+    def _get_author_name(self):
+        return self._get_latest_commit_format('%aN')
+
+    def _get_author_email(self):
+        return self._get_latest_commit_format('%ae')
+
+    def _get_committer_name(self):
+        return self._get_latest_commit_format('%cN')
+
+    def _get_committer_email(self):
+        return self._get_latest_commit_format('%ce')
+
+    def _get_commit_subject(self):
+        return self._get_latest_commit_format('%s')
+
+    def _get_commit_sha(self):
+        return self._get_latest_commit_format('%H')
+
+    def _get_commit_time(self):
+        return self._get_latest_commit_format('%ct')
+
     @property
     def commit_sha(self):
         # First, percy env var.
@@ -72,6 +98,70 @@ class Environment(object):
         # Second, from the CI environment.
         if self._real_env and hasattr(self._real_env, 'commit_sha'):
             return self._real_env.commit_sha
+        # Third, from the local git repo.
+        sha = self._get_commit_sha()
+        if sha:
+            return sha
+
+    @property
+    def commit_author_name(self):
+        # First, percy env var.
+        if os.getenv('PERCY_COMMIT_AUTHOR'):
+            return os.getenv('PERCY_COMMIT_AUTHOR')
+        # Second, from the local git repo.
+        author_name = self._get_author_name()
+        if author_name:
+            return author_name
+
+    @property
+    def commit_author_email(self):
+        # First, percy env var.
+        if os.getenv('PERCY_COMMIT_AUTHOR_EMAIL'):
+            return os.getenv('PERCY_COMMIT_AUTHOR_EMAIL')
+        # Second, from the local git repo.
+        author_email = self._get_author_email()
+        if author_email:
+            return author_email
+
+    @property
+    def commit_committer_name(self):
+        # First, percy env var.
+        if os.getenv('PERCY_COMMIT_COMMITTER'):
+            return os.getenv('PERCY_COMMIT_COMMITTER')
+        # Second, from the local git repo
+        committer_name = self._get_committer_name()
+        if committer_name:
+            return committer_name
+
+    @property
+    def commit_committer_email(self):
+        # First, percy env var.
+        if os.getenv('PERCY_COMMIT_COMMITTER_EMAIL'):
+            return os.getenv('PERCY_COMMIT_COMMITTER_EMAIL')
+        # Second, from the local git repo
+        committer_email = self._get_committer_email()
+        if committer_email:
+            return committer_email
+
+    @property
+    def commit_subject(self):
+        # First, percy env var.
+        if os.getenv('PERCY_COMMIT_SUBJECT'):
+            return os.getenv('PERCY_COMMIT_SUBJET')
+        # Second, from the local git repo.
+        subject = self._get_commit_subject()
+        if subject:
+            return subject
+
+    @property
+    def commit_committed_at(self):
+        # First, percy env var.
+        if os.getenv('PERCY_COMMIT_COMMITTED_AT'):
+            return os.getenv('PERCY_COMMIT_COMMITTED_AT')
+        # Second, from the local git repo.
+        committed_at = self._get_commit_time()
+        if committed_at:
+            return committed_at
 
     @property
     def repo(self):

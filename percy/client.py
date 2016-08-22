@@ -34,6 +34,18 @@ class Client(object):
         pull_request_number = kwargs.get('pull_request_number') \
             or self.environment.pull_request_number
         resources = kwargs.get('resources')
+        commit_author_name = kwargs.get('author_name') \
+            or self.environment.commit_author_name
+        commit_author_email = kwargs.get('author_email') \
+            or self.environment.commit_author_email
+        commit_committer_name = kwargs.get('committer_name') \
+            or self.environment.commit_committer_name
+        commit_committer_email = kwargs.get('committer_email') \
+            or self.environment.commit_committer_email
+        commit_message = kwargs.get('commit_message') \
+            or self.environment.commit_subject
+        commit_committed_at = kwargs.get('committed_at') \
+            or self.environment.commit_committed_at
         parallel_nonce = kwargs.get('parallel_nonce') or self.environment.parallel_nonce
         parallel_total_shards = kwargs.get('parallel_total_shards') \
             or self.environment.parallel_total_shards
@@ -49,6 +61,12 @@ class Client(object):
                 'attributes': {
                     'branch': branch,
                     'commit-sha': commit_sha,
+                    'commit-committed-at': commit_committed_at,
+                    'commit-author-name': commit_author_name,
+                    'commit-author-email': commit_author_email,
+                    'commit-committer-name': commit_committer_name,
+                    'commit-committer-email': commit_committer_email,
+                    'commit-message': commit_message,
                     'pull-request-number': pull_request_number,
                     'parallel-nonce': parallel_nonce,
                     'parallel-total-shards': parallel_total_shards,
