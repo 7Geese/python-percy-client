@@ -11,7 +11,7 @@ class Connection(object):
 
     def _requests_retry_session(
         self,
-        retries=3,
+        retries=8,
         backoff_factor=0.3,
         method_whitelist=['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'TRACE'],
         status_forcelist=(500, 502, 503, 504, 520, 524),
